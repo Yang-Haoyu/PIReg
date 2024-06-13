@@ -1,0 +1,6 @@
+/.vscode
+/logs
+/result
+__pycache__
+logs
+*result*
