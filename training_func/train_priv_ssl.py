@@ -2,6 +2,7 @@ from training_func.exp_fnc import train_models
 
 from priv_reg.PIReg import pcorinfomax, pvime
 from priv_reg.TriDeNT import TriDeNT
+from priv_reg.priv_ssl import priv_ssl
 
 def create_PIReg(hpara, backbone = "scarf", teacher = None):
         # make three copies of pretrained model for different fine tuning strategy
@@ -10,6 +11,8 @@ def create_PIReg(hpara, backbone = "scarf", teacher = None):
         ssl = pcorinfomax(hpara, teacher=teacher)
     elif backbone == "priv_vime":
         ssl = pvime(hpara, teacher=teacher)
+    elif backbone == "TriDeNT":
+        ssl = TriDeNT(hpara, teacher=teacher)
     else:
         print("Please choose backbone from [scarf, vime]")
         raise NotImplementedError
@@ -28,12 +31,12 @@ def pretrain_PIReg(hpara, ft_data, backbone = None, teacher = None):
 
     ssl_pt, _ = train_models(ssl, "priv_ssl_priv_embd", hpara, D_tr_pre, D_val)
 
-    ssl_ft = create_priv_ssl_models( hpara, backbone = backbone, teacher = teacher)
-    ssl_ft_PL = create_priv_ssl_models( hpara, backbone = backbone, teacher = teacher)
-    ssl_ft_GenD = create_priv_ssl_models( hpara, backbone = backbone, teacher = teacher)
-    ssl_ft_PFD = create_priv_ssl_models( hpara,  backbone = backbone, teacher = teacher)
-    ssl_ft_Semi_GenD = create_priv_ssl_models( hpara, backbone = backbone, teacher = teacher)
-    ssl_ft_Semi_PFD = create_priv_ssl_models( hpara,  backbone = backbone, teacher = teacher)
+    ssl_ft = create_PIReg( hpara, backbone = backbone, teacher = teacher)
+    ssl_ft_PL = create_PIReg( hpara, backbone = backbone, teacher = teacher)
+    ssl_ft_GenD = create_PIReg( hpara, backbone = backbone, teacher = teacher)
+    ssl_ft_PFD = create_PIReg( hpara,  backbone = backbone, teacher = teacher)
+    ssl_ft_Semi_GenD = create_PIReg( hpara, backbone = backbone, teacher = teacher)
+    ssl_ft_Semi_PFD = create_PIReg( hpara,  backbone = backbone, teacher = teacher)
 
     ssl_ft.load_state_dict(ssl_pt.ssl_backbone.state_dict())
     ssl_ft_GenD.load_state_dict(ssl_pt.ssl_backbone.state_dict())

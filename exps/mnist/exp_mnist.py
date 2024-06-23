@@ -15,9 +15,9 @@ import torch
 
 from training_func.exp_fnc import train_teacher, train_mlp_baseline
 from data.create_dat import create_baseline_dataset, create_pretraining_dataset, create_all_datasets
-from training_func.train_ssl import fine_tune_SSL, fine_tune_SemiSSL, pretrain_SSL_baseline, fine_tune_PL_SSL, fine_tune_LUPISSL
-from training_func.train_priv_ssl import pretrain_priv_SSL
-from training_func.LUPI import Semi_KD_baseline, train_tram, train_twosteps
+from training_func.train_ssl import fine_tune_SSL, fine_tune_DK_SP, pretrain_SSL_baseline, fine_tune_PL_SSL, fine_tune_LUPISSL
+from training_func.train_priv_ssl import pretrain_PIReg
+from training_func.LUPI import KD_baseline, train_tram, train_twosteps
 
 save_path = grandparent_dir + "/mnist_result"
 if not os.path.exists(save_path):
@@ -146,15 +146,15 @@ for priv_trans in ["Resize"]:
                 result, mlp_baseline = train_mlp_baseline(result, hpara, D_tr, D_val, D_test)
                 result, tram_baseline = train_tram(result, hpara, D_tr, D_val, D_test)
 
+                result, GenD_model = KD_baseline(hpara, result, ft_data)
 
-                result, GenD_model, Semi_GenD = Semi_KD_baseline(hpara, result, ft_data)
-                hpara["loss_corinfomax"] = "cross"
-                for backbone_name in ["TriDeNT", "priv_vime2"]:
-                    ssl_pt, ssl_ft, ssl_ft_GenD, ssl_ft_PFD, ssl_ft_PL, ssl_ft_Semi_GenD, ssl_ft_Semi_PFD = pretrain_priv_SSL(hpara, ft_data, backbone = backbone_name, teacher= teacher_model)
-                    result, ssl_baseline = fine_tune_SSL(hpara, result, ssl_ft, ft_data, stop_gradient = stop_gradient, mode="Reg", model_name = backbone_name + " privssl")
-                    result, ssl_ft_PL = fine_tune_PL_SSL(hpara, result, ssl_ft_PL, ft_data, stop_gradient = stop_gradient, model_name = backbone_name+ " privssl")
-                    result,  ssl_ft_GenD = fine_tune_LUPISSL(hpara, result, (ssl_ft_GenD, ssl_ft_PFD), ft_data, stop_gradient = stop_gradient, model_name = backbone_name+ " privssl")
-                    result,  ssl_ft_DK_ = fine_tune_SemiSSL(hpara, result, (ssl_ft_Semi_GenD, ssl_ft_Semi_PFD), ft_data, stop_gradient = stop_gradient, model_name = backbone_name+ " privssl")
+                for backbone_name in ["TriDeNT", "priv_corinfomax", "priv_vime"]:
+                    hpara["loss_comp"] = ["proj", "closs", "dloss" ,  "priv_cov_loss"]
+                    ssl_pt, ssl_ft, ssl_ft_GenD, ssl_ft_PFD, ssl_ft_PL, ssl_ft_Semi_GenD, ssl_ft_Semi_PFD = pretrain_PIReg(hpara, ft_data, backbone = backbone_name, teacher= teacher_model)
+                    result, ssl_baseline = fine_tune_SSL(hpara, result, ssl_ft, ft_data, stop_gradient = stop_gradient, mode="Reg", model_name = backbone_name + " PIReg")
+                    result, ssl_ft_PL = fine_tune_PL_SSL(hpara, result, ssl_ft_PL, ft_data, stop_gradient = stop_gradient, model_name = backbone_name+ " PIReg")
+                    result,  ssl_ft_GenD = fine_tune_LUPISSL(hpara, result, ssl_ft_GenD, ft_data, stop_gradient = stop_gradient, model_name = backbone_name+ " PIReg")
+                    result,  ssl_ft_DK_SP = fine_tune_DK_SP(hpara, result, ssl_ft_Semi_GenD, ft_data, stop_gradient = stop_gradient, model_name = backbone_name+ " PIReg")
 
 
 
@@ -163,7 +163,7 @@ for priv_trans in ["Resize"]:
                     ssl_pt, ssl_ft, ssl_ft_GenD, ssl_ft_PFD, ssl_ft_PL, ssl_ft_Semi_GenD, ssl_ft_Semi_PFD = pretrain_SSL_baseline(hpara,  dat.stats, ft_data, backbone = backbone_name, mode="Reg")
                     result, ssl_baseline = fine_tune_SSL(hpara, result, ssl_ft, ft_data, stop_gradient = stop_gradient, mode="Reg", model_name = backbone_name)
                     result, ssl_ft_PL  = fine_tune_PL_SSL(hpara, result, ssl_ft_PL, ft_data, stop_gradient = stop_gradient, model_name = backbone_name)
-                    result,  ( ssl_ft_GenD, ssl_ft_PFD) = fine_tune_LUPISSL(hpara, result,  (ssl_ft_GenD, ssl_ft_PFD), ft_data, stop_gradient = stop_gradient, model_name = backbone_name)
+                    result,  ssl_ft_GenD = fine_tune_LUPISSL(hpara, result,  ssl_ft_GenD, ft_data, stop_gradient = stop_gradient, model_name = backbone_name)
 
                 torch.save(result, save_path+"/{}_{}_{}_{}_{}_{}_{}.pt".format(reg_trans, priv_trans, split[0], split[1], split[2], seed, lr))
 

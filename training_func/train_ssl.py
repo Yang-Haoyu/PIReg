@@ -92,7 +92,7 @@ def fine_tune_DK_SP(hpara, result, ssl_ft_DK_SP, ft_data, stop_gradient = False,
     ft_DK_SP = LUPI_KD(None, hpara, gamma =  hpara["gamma"]["KD_SP"], T=hpara["T"]["KD_SP"],
                       encoder = ssl_ft_DK_SP.encoder, stop_gradient = stop_gradient)
     
-    ft_DK_SP, trainer_ft_GenD =  train_models(ft_DK_SP, "{}".format(model_name), hpara, ft_data["KD_SP"], ft_data["KD_SP"])
+    ft_DK_SP, trainer_ft_GenD =  train_models(ft_DK_SP, "{}".format(model_name), hpara, ft_data["KD_SP_tr"], ft_data["KD_SP_tr"])
     result["{} KD_SP".format(model_name)] = trainer_ft_GenD.test(ft_DK_SP, ft_data["tst"])[0]
     result["{} KD_SP".format(model_name)]["val_loss"] = trainer_ft_GenD.test(ft_DK_SP, ft_data["val"])[0]
 
