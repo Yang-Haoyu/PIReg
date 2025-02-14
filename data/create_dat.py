@@ -203,9 +203,9 @@ def create_LUPI_dataset(hpara, teacher, base_dataset, teacher_mode =None):
     return D_LUPI_tr, D_LUPI_val
 
 
-def create_all_datasets(hpara, base_dataset, gend_teacher, ft_data):
+def create_all_datasets(hpara, base_dataset, gend_teacher, ft_data, teacher_mode  ="GenD"):
     # training set used for LUPI methods
-    D_LUPI_tr_gend, D_LUPI_val_gend = create_LUPI_dataset(hpara, gend_teacher, base_dataset, teacher_mode ="GenD")
+    D_LUPI_tr_gend, D_LUPI_val_gend = create_LUPI_dataset(hpara, gend_teacher, base_dataset, teacher_mode)
 
     D_tr_KD_SP = create_KD_SP(hpara, gend_teacher, base_dataset, teacher_mode = "GenD")
 

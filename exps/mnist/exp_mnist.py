@@ -23,15 +23,20 @@ save_path = grandparent_dir + "/mnist_result"
 if not os.path.exists(save_path):
     os.mkdir(save_path)
 
+
+
 # dat_path = "PATH TO MNIST"
 dat_path = sys.argv[1]
 seed = int(sys.argv[2])
+cuda_device = sys.argv[3]
 
+os.environ["CUDA_VISIBLE_DEVICES"] = str(cuda_device)
 
 for priv_trans in ["Resize"]:
 
     for reg_trans  in ["Blur"]:
-        for split in [(1000, 1000, 5000), (2500, 1000, 5000), (5000, 1000, 5000)]:
+        # for split in [(1000, 1000, 5000), (2500, 1000, 5000), (5000, 1000, 5000)]:
+        for split in [(100, 1000, 5000), (250, 1000, 5000), (500, 1000, 5000)]:
 
             
             # reg_trans, priv_trans = "Blur", "Elastic"

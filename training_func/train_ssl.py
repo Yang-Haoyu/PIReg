@@ -82,7 +82,7 @@ def fine_tune_SSL(hpara, result, ssl_ft, ft_data, stop_gradient = False, model_n
     ft_baseline = clf_mlp(None, hpara, mode = mode, encoder = ssl_ft.encoder, stop_gradient = stop_gradient)
     ft_baseline, trainer_ft_baseline =  train_models(ft_baseline, "{}".format(model_name), hpara, ft_data["tr"], ft_data["val"])
     result["{} {}".format(model_name, mode)] = trainer_ft_baseline.test(ft_baseline, ft_data["tst"])[0]
-    result["{} {}".format(model_name, mode)]["val_loss"] = trainer_ft_baseline.test(ft_baseline, ft_data["val"])[0]
+    # result["{} {}".format(model_name, mode)]["val_loss"] = trainer_ft_baseline.test(ft_baseline, ft_data["val"])[0]
 
     return result, ft_baseline
 
@@ -94,7 +94,7 @@ def fine_tune_DK_SP(hpara, result, ssl_ft_DK_SP, ft_data, stop_gradient = False,
     
     ft_DK_SP, trainer_ft_GenD =  train_models(ft_DK_SP, "{}".format(model_name), hpara, ft_data["KD_SP_tr"], ft_data["KD_SP_tr"])
     result["{} KD_SP".format(model_name)] = trainer_ft_GenD.test(ft_DK_SP, ft_data["tst"])[0]
-    result["{} KD_SP".format(model_name)]["val_loss"] = trainer_ft_GenD.test(ft_DK_SP, ft_data["val"])[0]
+    # result["{} KD_SP".format(model_name)]["val_loss"] = trainer_ft_GenD.test(ft_DK_SP, ft_data["val"])[0]
 
 
     return result, ft_DK_SP
@@ -107,7 +107,7 @@ def fine_tune_LUPISSL(hpara, result, ssl_ft_GenD, ft_data, stop_gradient = False
     
     ft_GenD, trainer_ft_GenD =  train_models(ft_GenD, "{}".format(model_name), hpara, ft_data["GenD_tr"], ft_data["GenD_val"])
     result["{} GenD".format(model_name)] = trainer_ft_GenD.test(ft_GenD, ft_data["tst"])[0]
-    result["{} GenD".format(model_name)]["val_loss"] = trainer_ft_GenD.test(ft_GenD, ft_data["val"])[0]
+    # result["{} GenD".format(model_name)]["val_loss"] = trainer_ft_GenD.test(ft_GenD, ft_data["val"])[0]
 
     return result, ft_GenD
 
@@ -119,7 +119,7 @@ def fine_tune_PL_SSL(hpara, result, ssl_ft_PL, ft_data, stop_gradient = False, m
     ft_PL = clf_mlp(None, hpara,  mode = "Reg", encoder = ssl_ft_PL.encoder, stop_gradient = stop_gradient)
     ft_PL, trainer_ft_PL =  train_models(ft_PL, "{} PL".format(model_name), hpara, ft_data["KD_SP_tr"], ft_data["val"])
     result["{} PL".format(model_name)] = trainer_ft_PL.test(ft_PL, ft_data["tst"])[0]
-    result["{} PL".format(model_name)]["val_loss"] = trainer_ft_PL.test(ft_PL, ft_data["val"])[0]
+    # result["{} PL".format(model_name)]["val_loss"] = trainer_ft_PL.test(ft_PL, ft_data["val"])[0]
 
 
     return result, ft_PL

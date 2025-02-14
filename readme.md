@@ -1,4 +1,4 @@
 # Run Code
-cd exp/mnist
+cd exps/mnist
 
 python exp_mnist.py path_to_mnist seed

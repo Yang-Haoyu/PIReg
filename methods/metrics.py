@@ -34,7 +34,22 @@ def compute_scores_nsqip(y_pred_prob, y):
     scores["roc"] = roc_score
     scores["pr"] = pr_score
     return scores
+def compute_scores_uci_cdc(y_pred_prob, y):
+    scores = {}
 
+    roc = BinaryAUROC(thresholds=None)
+    pr = BinaryAveragePrecision(thresholds=None)
+
+
+    roc_score = roc(y_pred_prob[:,-1], y)
+    pr_score = pr(y_pred_prob[:,-1], y)
+    
+    acc = accuracy_score(torch.argmax(y_pred_prob, dim  = 1), y)
+    scores["acc"] = acc
+
+    scores["roc"] = roc_score
+    scores["pr"] = pr_score
+    return scores
 def compute_scores_mover(y_pred_prob, y):
     scores = {}
 

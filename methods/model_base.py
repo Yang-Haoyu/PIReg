@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import lightning as L
 import torch
 import numpy as np
-from methods.metrics import compute_scores_cifar, compute_scores_nsqip, compute_scores_mnist, compute_scores_mover
+from methods.metrics import compute_scores_cifar, compute_scores_nsqip, compute_scores_mnist, compute_scores_mover, compute_scores_uci_cdc
 
 from sklearn.linear_model import LogisticRegression
 import torch.nn.functional as F
@@ -93,6 +93,8 @@ class base(L.LightningModule):
             scores = compute_scores_mnist(y_pred_prob, y_tst)
         elif self.dataset == "mover":
             scores = compute_scores_mover(y_pred_prob, y_tst)
+        elif self.dataset == "uci":
+            scores = compute_scores_uci_cdc(y_pred_prob, y_tst)
         else:
             raise NotImplementedError
 
